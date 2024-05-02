@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const LoginForm = () => {
@@ -23,7 +23,7 @@ const LoginForm = () => {
             password
         }, {
             headers: {
-                'X-CSRF-TOKEN': token.data
+                // 'X-CSRF-TOKEN': token.data
                 // 'X-CSRF-TOKEN': window.Laravel.csrfToken
             }
         });
