@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import router from "next/router";
 import axios from '../../lib/axios'
@@ -19,7 +21,8 @@ const RegisterForm = () => {
         try {
             const token = await axios.get('http://localhost:8000/sanctum/csrf-cookie')
 
-            const response = await axios.post(`${process.env.API_URL}/api/register`, {
+            // const response = await axios.post(`${process.env.API_URL}/api/register`, {
+                const response = await axios.post(`http://localhost:8000/api/register`, {
                 name,
                 email,
                 password,
