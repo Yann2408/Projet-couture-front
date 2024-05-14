@@ -22,9 +22,7 @@ const LoginForm = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [errors, setErrors] = useState<ValidationErrors>({})
-    const [tokenError,setTokenErrors] = useState<string>("")
-
-    console.log(errors)
+    const [tokenError, setTokenErrors] = useState<string>("")
 
     const loginSchema = Yup.object({
         email: Yup.string()
@@ -46,31 +44,28 @@ const LoginForm = () => {
 
         try {
 
-            const token = await axios.get('http://localhost:8000/sanctum/csrf-cookie')
-
-            console.log(token)
+            await axios.get('http://localhost:8000/sanctum/csrf-cookie')
 
             await loginSchema.validate(data, { abortEarly: false })
 
-            console.log("passe la")
-
             const response = await axios.post('http://localhost:8000/api/login', {
-                data
+                email: email,
+                password: password
             }, {
-                // headers: {
-                    // 'X-CSRF-TOKEN': token.data
-                    // 'X-CSRF-TOKEN': window.Laravel.csrfToken
-                // }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                withCredentials: true,
+                withXSRFToken: true
             });
 
-            // localStorage.setItem('access_token', response.data.access_token);
-            // localStorage.setItem('user', JSON.stringify(response.data.user));
-            router.push('/dashboard');
+            localStorage.setItem('access_token', response.data.access_token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            router.push('/home');
 
-        } catch (error: unknown) {
-
-            console.log("errors2")
-            console.log(error)
+        } 
+        catch (error: unknown) {
 
             const validationErrors: ValidationErrors = {};
 
@@ -92,10 +87,7 @@ const LoginForm = () => {
                         setTokenErrors("email ou mot de passe invalide")
                     }
                     const apiErrors = axiosError.response.data.errors;
-                    
 
-                    console.log("axiosError.response.data.errors")
-                    console.log(axiosError.response.data)
                     if (apiErrors) {
                         Object.keys(apiErrors).forEach((key) => {
                             validationErrors[key] = apiErrors[key][0];
@@ -103,8 +95,8 @@ const LoginForm = () => {
                     }
                 }
                 setErrors(validationErrors);
-            } else {
-                // Gérer d'autres types d'erreurs ici
+            }
+            else {
                 console.error('Une erreur s\'est produite:', error);
             }
         }

@@ -1,43 +1,99 @@
 "use client";
 
 import { useState } from 'react';
-import router from "next/router";
-import axios from '../../lib/axios'
+import endpoints from '@/utils/endpoints';
+import * as Yup from 'yup';
+import axios, { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
 
 interface ValidationErrors {
-    [key: string]: string[];
+    [key: string]: string;
+}
+
+interface ApiErrorResponse {
+    errors: {
+        [key: string]: string[];
+    };
 }
 
 const RegisterForm = () => {
+
+    const router = useRouter()
+
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    //   const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [error, setError] = useState<ValidationErrors | null>(null);
+    const [errors, setErrors] = useState<ValidationErrors | null>(null);
+
+    const registerSchema = Yup.object({
+        name: Yup.string().required('Le nom est obligatoire'),
+        email: Yup.string()
+            .email()
+            .required('L\'email est obligatoire'),
+        password: Yup.string()
+            .required('Le mot de passe est obligatoire'),
+    });
 
     const registerUser = async (e: React.FormEvent<HTMLFormElement>) => {
+
         e.preventDefault();
+
+        setErrors({})
+
+        const data = {
+            name: name,
+            email: email,
+            password: password
+        }
+
         try {
             const token = await axios.get('http://localhost:8000/sanctum/csrf-cookie')
 
-            // const response = await axios.post(`${process.env.API_URL}/api/register`, {
-                const response = await axios.post(`http://localhost:8000/api/register`, {
+            await registerSchema.validate(data, { abortEarly: false })
+
+            
+                const response = await axios.post(endpoints.register, {
                 name,
                 email,
                 password,
-                // confirmPassword,
             });
-            // Stocker le token d'authentification
+            
             localStorage.setItem('authToken', response.data.access_token);
-            // Rediriger l'utilisateur
+            
             router.push('/login');
 
-        } catch (error) {
-            // Gérer les erreurs de validation
-            if (error instanceof Error) {
-                console.log(error)
-                // setError(error)      
+        } 
+        catch (error: unknown) {
+
+            const validationErrors: ValidationErrors = {};
+
+            if (error instanceof Yup.ValidationError) {
+                error.inner.forEach((err) => {
+                    if (err instanceof Yup.ValidationError && err.path !== undefined) {
+                        validationErrors[err.path] = err.message;
+                    }
+                });
+
+                setErrors(validationErrors);
+
+            }
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError<ApiErrorResponse>;
+                if (axiosError.response && axiosError.response.data) {
+
+                    const apiErrors = axiosError.response.data.errors;
+
+                    if (apiErrors) {
+                        Object.keys(apiErrors).forEach((key) => {
+                            validationErrors[key] = apiErrors[key][0];
+                        });
+                    }
+                }
+                setErrors(validationErrors);
+            }
+            else {
+                console.error('Une erreur s\'est produite:', error);
             }
         }
     };
@@ -74,23 +130,14 @@ const RegisterForm = () => {
                     required
                 />
             </div>
-            {/* <div>
-        <label htmlFor="confirmPassword">Confirmer le mot de passe :</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-      </div> */}
-            {/* {error && (
+            
+            {errors && (
         <div>
-          {Object.values(error).map((messages, index) => (
+          {Object.values(errors).map((messages, index) => (
             <p key={index}>{messages[0]}</p>
           ))}
         </div>
-      )} */}
+      )}
             <button type="submit">S'inscrire</button>
         </form>
     );
