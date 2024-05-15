@@ -5,6 +5,7 @@ import endpoints from '@/utils/endpoints';
 import * as Yup from 'yup';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
+import register from '@/utils/auth/register';
 
 
 interface ValidationErrors {
@@ -48,18 +49,10 @@ const RegisterForm = () => {
         }
 
         try {
-            const token = await axios.get('http://localhost:8000/sanctum/csrf-cookie')
-
+           
             await registerSchema.validate(data, { abortEarly: false })
 
-            
-                const response = await axios.post(endpoints.register, {
-                name,
-                email,
-                password,
-            });
-            
-            localStorage.setItem('authToken', response.data.access_token);
+            await register(data)
             
             router.push('/login');
 

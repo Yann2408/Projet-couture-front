@@ -1,5 +1,6 @@
 "use client";
 
+import login from "@/utils/auth/login";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -44,24 +45,10 @@ const LoginForm = () => {
 
         try {
 
-            await axios.get('http://localhost:8000/sanctum/csrf-cookie')
-
             await loginSchema.validate(data, { abortEarly: false })
 
-            const response = await axios.post('http://localhost:8000/api/login', {
-                email: email,
-                password: password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                withCredentials: true,
-                withXSRFToken: true
-            });
+            await login(data)
 
-            localStorage.setItem('access_token', response.data.access_token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
             router.push('/home');
 
         } 
