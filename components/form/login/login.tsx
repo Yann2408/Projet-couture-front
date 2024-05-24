@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import * as Yup from 'yup';
+import style from './login.module.css';
 
 interface ValidationErrors {
     [key: string]: string;
@@ -51,7 +52,7 @@ const LoginForm = () => {
 
             router.push('/home');
 
-        } 
+        }
         catch (error: unknown) {
 
             const validationErrors: ValidationErrors = {};
@@ -90,24 +91,28 @@ const LoginForm = () => {
     }
 
     return (
-        <div>
-            <h1>Login</h1>
-            <input
-                type="email"
-                // placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-                type="password"
-                // placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <button onClick={handleLogin}>Login</button>
-            {errors.password && <p>{errors.password}</p>}
-            {errors.email && <p>{errors.email}</p>}
-            {tokenError && <p>{tokenError}</p>}
+        <div className={style.body}>
+            <div className={style.container}>
+                <h1 className={style.title}>Connecte toi</h1>
+                <input
+                    className={style.input}
+                    type="email"
+                    // placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <input
+                    className={style.input}
+                    type="password"
+                    // placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <button className={style.button} onClick={handleLogin}>Login</button>
+                {errors.password && <p className={style.error}>{errors.password}</p>}
+                {errors.email && <p className={style.error}>{errors.email}</p>}
+                {tokenError && <p className={style.error}>{tokenError}</p>}
+            </div>
         </div>
     );
 }
