@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Playfair_Display, Lato } from 'next/font/google'
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+
+export const playfairDisplay = Playfair_Display({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--typo-title',
+})
+
+export const lato = Lato({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--font-lato',
+})
 
 export const metadata: Metadata = {
   title: "Projet couture",
@@ -16,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body className={`${playfairDisplay.variable} ${lato.variable}`}>{children}</body>
     </html>
   );
 }

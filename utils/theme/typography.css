@@ -1,6 +1,0 @@
-@import "typography.ts";
-
-:root {
-    --title: colors.main;
-    --text: colors.secondary;
-  }

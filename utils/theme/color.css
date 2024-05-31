@@ -1,8 +1,0 @@
-@import "color.ts";
-
-:root {
-  --main-color: colors.main;
-  --secondary-color: colors.secondary;
-  --dark-color: colors.dark;
-  --text-color: colors.text;
-}

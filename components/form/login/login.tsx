@@ -7,6 +7,7 @@ import { useState } from "react";
 import * as Yup from 'yup';
 import style from './login.module.css';
 
+
 interface ValidationErrors {
     [key: string]: string;
 }
@@ -97,18 +98,18 @@ const LoginForm = () => {
                 <input
                     className={style.input}
                     type="email"
-                    // placeholder="Email"
+                    placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                     className={style.input}
                     type="password"
-                    // placeholder="Password"
+                    placeholder="Mot de passe"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <button className={style.button} onClick={handleLogin}>Login</button>
+                <button className={style.button} onClick={handleLogin}>Se connecter</button>
                 {errors.password && <p className={style.error}>{errors.password}</p>}
                 {errors.email && <p className={style.error}>{errors.email}</p>}
                 {tokenError && <p className={style.error}>{tokenError}</p>}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import endpoints from '@/utils/endpoints';
 import * as Yup from 'yup';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
